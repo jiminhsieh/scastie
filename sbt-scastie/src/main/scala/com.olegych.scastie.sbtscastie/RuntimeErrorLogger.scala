@@ -75,27 +75,30 @@ object RuntimeErrorLogger {
                 val level = event.getLevel
                 val message = event.getMessage
 
+                println("### " + message.toString)
+
                 message match {
+
                   case o: ObjectMessage => {
                     o.getParameter match {
                       case e: StringEvent => {
                         // keep in server-side
+                        println("### " + e.message)
                       }
                       case e: ObjectEvent[_] => {
                         // to client-site
-                        println(e.message)
-                        println("//////")
-                        println(e.message.toString)
+                        println("### " + e.message)
                       }
                       case _ => {
                         // log to server-site
                       }
                     }
                   }
+
                   case _ => {
                     println("### Other Type ###")
-                    println(level)
-                    println(message)
+                    println("### " + level)
+                    println("### " + message)
                   }
                 }
 
