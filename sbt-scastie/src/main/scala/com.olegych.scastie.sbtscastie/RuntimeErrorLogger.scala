@@ -11,7 +11,7 @@ import org.apache.logging.log4j.core
 import org.apache.logging.log4j.core.appender.AbstractAppender
 import org.apache.logging.log4j.core.layout.PatternLayout
 import org.apache.logging.log4j.message.ObjectMessage
-import sbt.internal.util.{ObjectEvent, StringEvent}
+import sbt.internal.util.{ObjectEvent, StringEvent, TraceEvent}
 
 object RuntimeErrorLogger {
   private object NoOp {
@@ -75,7 +75,7 @@ object RuntimeErrorLogger {
                 val level = event.getLevel
                 val message = event.getMessage
 
-                println("### " + message.toString)
+                println("### (Not Pattern yet)" + message.toString)
 
                 message match {
 
@@ -83,11 +83,17 @@ object RuntimeErrorLogger {
                     o.getParameter match {
                       case e: StringEvent => {
                         // keep in server-side
-                        println("### " + e.message)
+                        println("### (StringEvent) " + e.message)
                       }
                       case e: ObjectEvent[_] => {
                         // to client-site
-                        println("### " + e.message)
+                        println("### (ObjectEvent)" + e.message)
+                      }
+
+                      case e: TraceEvent => {
+                        val error = RuntimeErrorWrap(RuntimeError.fromThrowable(e.message))
+                        println("### (TraceEvent)")
+                        println(Json.stringify(Json.toJson(error)))
                       }
                       case _ => {
                         // log to server-site
