@@ -91,12 +91,13 @@ object RuntimeErrorLogger {
                       }
 
                       case e: TraceEvent => {
-                        val error = RuntimeErrorWrap(RuntimeError.fromThrowable(e.message))
                         println("### (TraceEvent)")
+                        val error = RuntimeErrorWrap(RuntimeError.fromThrowable(e.message))
                         println(Json.stringify(Json.toJson(error)))
                       }
-                      case _ => {
+                      case e: Object => {
                         // log to server-site
+                        println("### (Object)" +  e.toString)
                       }
                     }
                   }
