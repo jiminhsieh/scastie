@@ -10,18 +10,19 @@ import KeyRanks.DTask
 
 import System.{lineSeparator => nl}
 
-import xsbti.{Reporter, Problem, Position, Severity, Maybe}
+import xsbti.{Reporter, Problem, Position, Severity}
+import java.util.Optional
 
 object CompilerReporter {
   // compilerReporter is marked private in sbt
-  private lazy val compilerReporter = TaskKey[Option[xsbti.Reporter]](
+  private lazy val compilerReporter = TaskKey[xsbti.Reporter](
     "compilerReporter",
     "Experimental hook to listen (or send) compilation failure messages.",
     DTask
   )
 
   val setting: sbt.Def.Setting[_] =
-    compilerReporter in (Compile, compile) := Some(
+    compilerReporter in (Compile, compile) :=
       new xsbti.Reporter {
         private val buffer = collection.mutable.ArrayBuffer.empty[Problem]
         def reset(): Unit = buffer.clear()
@@ -30,8 +31,8 @@ object CompilerReporter {
 
         def printSummary(): Unit = {
           def toApi(p: Problem): api.Problem = {
-            def toOption[T](m: Maybe[T]): Option[T] = {
-              if (m.isEmpty) None
+            def toOption[T](m: Optional[T]): Option[T] = {
+              if (!m.isPresent) None
               else Some(m.get)
             }
             val severity =
@@ -50,17 +51,17 @@ object CompilerReporter {
           }
         }
         def problems: Array[Problem] = buffer.toArray
-        def log(pos: Position, msg: String, sev: Severity): Unit = {
+        def log(problem: Problem): Unit = {
           object MyProblem extends Problem {
             def category: String = "foo"
-            def severity: Severity = sev
-            def message: String = msg
-            def position: Position = pos
+            def severity: Severity = problem.severity
+            def message: String = problem.message
+            def position: Position = problem.position
             override def toString = s"$position:$severity: $message"
           }
           buffer.append(MyProblem)
         }
         def comment(pos: xsbti.Position, msg: String): Unit = ()
       }
-    )
+
 }

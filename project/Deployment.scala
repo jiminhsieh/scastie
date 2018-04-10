@@ -1,3 +1,4 @@
+import scala.sys.process.Process
 import sbt._
 import Keys._
 

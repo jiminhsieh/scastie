@@ -8,8 +8,7 @@ import org.scalajs.dom.{
   window,
   CloseEvent,
   Event,
-  MessageEvent,
-  ErrorEvent
+  MessageEvent
 }
 
 import japgolly.scalajs.react.{Callback, CallbackTo}
@@ -96,8 +95,8 @@ class WebSocketStream[T: Reads](uri: String, handler: EventStreamHandler[T])
     onMessage(e.data.toString)
   }
 
-  private def onError(e: ErrorEvent): Unit = {
-    onError(e.message)
+  private def onError(e: Event): Unit = {
+    onError(e.toString)
   }
 
   private def onClose(e: CloseEvent): Unit = {

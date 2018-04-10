@@ -1,19 +1,17 @@
 package com.olegych.scastie.sbtscastie
 
-import com.olegych.scastie.api.{
-  ConsoleOutput,
-  ProcessOutputType,
-  ProcessOutput,
-  RuntimeError,
-  RuntimeErrorWrap
-}
-
+import com.olegych.scastie.api.{ConsoleOutput, ProcessOutput, ProcessOutputType, RuntimeError, RuntimeErrorWrap}
 import sbt._
 import Keys._
-
+import sbt.internal.LogManager
 import play.api.libs.json.Json
+import java.io.{OutputStream, PrintWriter, StringWriter}
 
-import java.io.{PrintWriter, OutputStream, StringWriter}
+import org.apache.logging.log4j.core
+import org.apache.logging.log4j.core.appender.AbstractAppender
+import org.apache.logging.log4j.core.layout.PatternLayout
+import org.apache.logging.log4j.message.ObjectMessage
+import sbt.internal.util.{ObjectEvent, StringEvent}
 
 object RuntimeErrorLogger {
   private object NoOp {
@@ -44,7 +42,7 @@ object RuntimeErrorLogger {
 
   val settings: Seq[sbt.Def.Setting[_]] = Seq(
     extraLoggers := {
-      val clientLogger = FullLogger {
+      /*val clientLogger = FullLogger {
         new Logger {
           def log(level: Level.Value, message: => String): Unit = ()
 
@@ -66,7 +64,19 @@ object RuntimeErrorLogger {
             }
           }
         }
+      }*/
+
+      val clientLogger = new AbstractAppender(
+        "FakeAppender",
+        null,
+        PatternLayout.createDefaultLayout()
+      ) {
+              override def append(event: core.LogEvent): Unit = {
+
+
+              }
       }
+      clientLogger.start()
       // val currentFunction = extraLoggers.value
       (key: ScopedKey[_]) =>
         Seq(clientLogger)

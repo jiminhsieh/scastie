@@ -1,8 +1,8 @@
-import SbtShared.{apiProject, sbt210}
+import SbtShared.{apiProject, currentScalaVersion}
 
-val api210 = apiProject(sbt210, fromSbt = true)
-lazy val api210JVM = api210.jvm
+val apiCurrent = apiProject(currentScalaVersion, fromSbt = true)
+lazy val apiJVM = apiCurrent.jvm
 
 libraryDependencies += "com.typesafe" % "config" % "1.3.1"
 
-dependsOn(api210JVM)
+dependsOn(apiJVM)
