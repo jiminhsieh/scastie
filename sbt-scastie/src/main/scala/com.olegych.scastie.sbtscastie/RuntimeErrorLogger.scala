@@ -72,7 +72,32 @@ object RuntimeErrorLogger {
         PatternLayout.createDefaultLayout()
       ) {
               override def append(event: core.LogEvent): Unit = {
+                val level = event.getLevel
+                val message = event.getMessage
 
+                message match {
+                  case o: ObjectMessage => {
+                    o.getParameter match {
+                      case e: StringEvent => {
+                        // keep in server-side
+                      }
+                      case e: ObjectEvent[_] => {
+                        // to client-site
+                        println(e.message)
+                        println("//////")
+                        println(e.message.toString)
+                      }
+                      case _ => {
+                        // log to server-site
+                      }
+                    }
+                  }
+                  case _ => {
+                    println("### Other Type ###")
+                    println(level)
+                    println(message)
+                  }
+                }
 
               }
       }
