@@ -5,7 +5,7 @@ import sbt._
 import Keys._
 import sbt.internal.LogManager
 import play.api.libs.json.Json
-import java.io.{OutputStream, PrintWriter, StringWriter}
+import java.io.{OutputStream, PrintWriter}
 
 import org.apache.logging.log4j.core
 import org.apache.logging.log4j.core.appender.AbstractAppender
@@ -75,18 +75,19 @@ object RuntimeErrorLogger {
                 val level = event.getLevel
                 val message = event.getMessage
 
-                println("### (Not Pattern yet)" + message.toString)
+                println("### (Not Pattern yet) " + message.toString)
 
                 message match {
 
                   case o: ObjectMessage => {
                     o.getParameter match {
                       case e: StringEvent => {
-                        // keep in server-side
+                        // console messages
                         println("### (StringEvent) " + e.message)
                       }
                       case e: ObjectEvent[_] => {
-                        // to client-site
+                        val error = RuntimeErrorWrap(RuntimeError.fromThrowable(e.message))
+                        println(Json.stringify(Json.toJson(error)))
                         println("### (ObjectEvent)" + e.message)
                       }
 
