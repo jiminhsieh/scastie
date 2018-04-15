@@ -74,8 +74,13 @@ object RuntimeErrorLogger {
               override def append(event: core.LogEvent): Unit = {
                 val level = event.getLevel
                 val message = event.getMessage
+                val contextData = event.getContextData
 
-                println("### (Not Pattern yet) " + message.toString)
+
+                println(s"### (Not Pattern Match yet) event = $level")
+                println(s"### (Not Pattern Match yet) message $message")
+                println(s"### (Not Pattern Match yet) message $contextData")
+
 
                 message match {
 
@@ -86,8 +91,8 @@ object RuntimeErrorLogger {
                         println("### (StringEvent) " + e.message)
                       }
                       case e: ObjectEvent[_] => {
-                        val error = RuntimeErrorWrap(RuntimeError.fromThrowable(e.message))
-                        println(Json.stringify(Json.toJson(error)))
+
+                        //val error = RuntimeErrorWrap(RuntimeError.fromThrowable(e.))
                         println("### (ObjectEvent)" + e.message)
                       }
 
@@ -96,9 +101,10 @@ object RuntimeErrorLogger {
                         val error = RuntimeErrorWrap(RuntimeError.fromThrowable(e.message))
                         println(Json.stringify(Json.toJson(error)))
                       }
-                      case e: Object => {
+                      case _ => {
+                          o
                         // log to server-site
-                        println("### (Object)" +  e.toString)
+                        println("### (Object)" +  o.getParameter.toString)
                       }
                     }
                   }
