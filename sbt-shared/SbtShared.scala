@@ -1,3 +1,4 @@
+import scala.sys.process.Process
 import sbt._
 import Keys._
 
@@ -33,7 +34,7 @@ object SbtShared {
   val latestEnsime = "2.0.0-M4"
   val latestCoursier = "1.0.0-RC14"
 
-  val sbtVersion = "0.13.16"
+  val sbtVersion = "1.1.4"
 
   val runtimeProjectName = "runtime-scala"
 
@@ -49,7 +50,8 @@ object SbtShared {
         if (gitIsDirty()) "-dirty"
         else ""
 
-      Process("git rev-parse --verify HEAD").lines.mkString("") + indexState
+      //Process("git rev-parse --verify HEAD").lines.mkString("") + indexState
+      Process("git rev-parse --verify HEAD").lineStream.mkString("") + indexState
     } else "CI"
   }
 

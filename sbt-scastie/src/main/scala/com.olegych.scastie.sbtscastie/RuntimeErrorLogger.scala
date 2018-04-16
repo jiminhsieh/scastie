@@ -1,19 +1,19 @@
 package com.olegych.scastie.sbtscastie
 
-import com.olegych.scastie.api.{
-  ConsoleOutput,
-  ProcessOutputType,
-  ProcessOutput,
-  RuntimeError,
-  RuntimeErrorWrap
-}
-
+import com.olegych.scastie.api.{ConsoleOutput, ProcessOutput, ProcessOutputType, RuntimeError, RuntimeErrorWrap}
 import sbt._
 import Keys._
-
+import sbt.internal.LogManager
 import play.api.libs.json.Json
+import java.io.{OutputStream, PrintWriter}
 
-import java.io.{PrintWriter, OutputStream, StringWriter}
+import org.apache.logging.log4j.core
+import org.apache.logging.log4j.core.appender.AbstractAppender
+import org.apache.logging.log4j.core.layout.PatternLayout
+import org.apache.logging.log4j.message.ObjectMessage
+import sbt.internal.util.{ObjectEvent, StringEvent, TraceEvent}
+
+import org.apache.logging.log4j.core.appender.AbstractAppender
 
 object RuntimeErrorLogger {
   private object NoOp {
@@ -44,29 +44,59 @@ object RuntimeErrorLogger {
 
   val settings: Seq[sbt.Def.Setting[_]] = Seq(
     extraLoggers := {
-      val clientLogger = FullLogger {
-        new Logger {
-          def log(level: Level.Value, message: => String): Unit = ()
+      val clientLogger = new AbstractAppender(
+        "FakeAppender",
+        null,
+        PatternLayout.createDefaultLayout()
+      ) {
+        override def append(event: core.LogEvent): Unit = {
+          val level = event.getLevel
+          val message = event.getMessage
+          val contextData = event.getContextData
 
-          def success(message: => String): Unit = () // << this is never called
 
-          def trace(t: => Throwable): Unit = {
+          println(s"### (Not Pattern Match yet) event = $level")
+          println(s"### (Not Pattern Match yet) message = $message")
+          println(s"### (Not Pattern Match yet) message = $contextData")
 
-            // Nonzero exit code: 1
-            val sbtTrap =
-              t.isInstanceOf[RuntimeException] &&
-                t.getMessage == "Nonzero exit code: 1" &&
-                !t.getStackTrace.exists(
-                  e => e.getClassName == "sbt.Run" && e.getMethodName == "invokeMain"
-                )
 
-            if (!sbtTrap) {
-              val error = RuntimeErrorWrap(RuntimeError.fromThrowable(t))
-              println(Json.stringify(Json.toJson(error)))
+          message match {
+
+            case o: ObjectMessage => {
+              o.getParameter match {
+                case e: StringEvent => {
+                  // console messages
+                  println("### (StringEvent) " + e.message)
+                }
+                case e: ObjectEvent[_] => {
+
+                  //val error = RuntimeErrorWrap(RuntimeError.fromThrowable(e.))
+                  println("### (ObjectEvent)" + e.message)
+                }
+
+                case e: TraceEvent => {
+                  println("### (TraceEvent)")
+                  val error = RuntimeErrorWrap(RuntimeError.fromThrowable(e.message))
+                  println(Json.stringify(Json.toJson(error)))
+                }
+                case _ => {
+                  o
+                  // log to server-site
+                  println("### (Object)" +  o.getParameter.toString)
+                }
+              }
+            }
+
+            case _ => {
+              println("### Other Type ###")
+              println("### " + level)
+              println("### " + message)
             }
           }
+
         }
       }
+      clientLogger.start()
       // val currentFunction = extraLoggers.value
       (key: ScopedKey[_]) =>
         Seq(clientLogger)
