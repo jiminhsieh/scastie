@@ -234,7 +234,7 @@ lazy val sbtRunner = project
       akka("remote"),
       akka("slf4j"),
       akkaHttp,
-      "com.geirsson" %% "scalafmt-core" % "1.3.0"
+      "com.geirsson" %% "scalafmt-core" % "1.4.0"
     ),
     imageNames in docker := Seq(
       ImageName(
@@ -278,7 +278,6 @@ lazy val server = project
       "org.json4s" %% "json4s-native" % "3.5.2",
       "ch.megard" %% "akka-http-cors" % "0.2.2",
       "com.softwaremill.akka-http-session" %% "core" % "0.5.5",
-      //"de.heikoseeberger" %% "akka-sse" % "3.0.0",
       akkaHttp,
       akka("remote"),
       akka("slf4j"),
