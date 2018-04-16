@@ -101,7 +101,7 @@ lazy val loggingAndTest =
   Seq(
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.1.7",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",
       "com.getsentry.raven" % "raven-logback" % "8.0.3"
     )
   ) ++ testSettings
@@ -276,9 +276,9 @@ lazy val server = project
     javaOptions in reStart += "-Xmx512m",
     libraryDependencies ++= Seq(
       "org.json4s" %% "json4s-native" % "3.5.2",
-      "ch.megard" %% "akka-http-cors" % "0.2.1",
-      "com.softwaremill.akka-http-session" %% "core" % "0.4.0",
-      "de.heikoseeberger" %% "akka-sse" % "3.0.0",
+      "ch.megard" %% "akka-http-cors" % "0.2.2",
+      "com.softwaremill.akka-http-session" %% "core" % "0.5.5",
+      //"de.heikoseeberger" %% "akka-sse" % "3.0.0",
       akkaHttp,
       akka("remote"),
       akka("slf4j"),
