@@ -16,6 +16,7 @@ import sbt.internal.util.{ObjectEvent, StringEvent, TraceEvent}
 object RuntimeErrorLogger {
   private object NoOp {
     def apply(): NoOp = {
+
       def out(in: String): Unit = {
         println(
           Json.stringify(
@@ -42,30 +43,6 @@ object RuntimeErrorLogger {
 
   val settings: Seq[sbt.Def.Setting[_]] = Seq(
     extraLoggers := {
-      /*val clientLogger = FullLogger {
-        new Logger {
-          def log(level: Level.Value, message: => String): Unit = ()
-
-          def success(message: => String): Unit = () // << this is never called
-
-          def trace(t: => Throwable): Unit = {
-
-            // Nonzero exit code: 1
-            val sbtTrap =
-              t.isInstanceOf[RuntimeException] &&
-                t.getMessage == "Nonzero exit code: 1" &&
-                !t.getStackTrace.exists(
-                  e => e.getClassName == "sbt.Run" && e.getMethodName == "invokeMain"
-                )
-
-            if (!sbtTrap) {
-              val error = RuntimeErrorWrap(RuntimeError.fromThrowable(t))
-              println(Json.stringify(Json.toJson(error)))
-            }
-          }
-        }
-      }*/
-
       val clientLogger = new AbstractAppender(
         "FakeAppender",
         null,
@@ -78,8 +55,8 @@ object RuntimeErrorLogger {
 
 
                 println(s"### (Not Pattern Match yet) event = $level")
-                println(s"### (Not Pattern Match yet) message $message")
-                println(s"### (Not Pattern Match yet) message $contextData")
+                println(s"### (Not Pattern Match yet) message = $message")
+                println(s"### (Not Pattern Match yet) message = $contextData")
 
 
                 message match {
