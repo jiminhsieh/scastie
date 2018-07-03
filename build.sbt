@@ -16,7 +16,7 @@ import scala.util.Try
 val scalaTestVersion = "3.0.1"
 val akkaHttpVersion = "10.0.10"
 
-def akka(module: String) = "com.typesafe.akka" %% ("akka-" + module) % "2.5.6"
+def akka(module: String) = "com.typesafe.akka" %% ("akka-" + module) % "2.5.13"
 
 def akkaHttp = "com.typesafe.akka" %% "akka-http" % akkaHttpVersion
 def akkaHttpCore = "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion
