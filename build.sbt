@@ -14,7 +14,7 @@ import scalajsbundler.util.JSON
 import scala.util.Try
 
 val scalaTestVersion = "3.0.5"
-val akkaHttpVersion = "10.0.10"
+val akkaHttpVersion = "10.1.3"
 
 def akka(module: String) = "com.typesafe.akka" %% ("akka-" + module) % "2.5.13"
 
