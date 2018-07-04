@@ -2,8 +2,8 @@ package com.olegych.scastie.sbtscastie
 
 import com.olegych.scastie.api.{
   ConsoleOutput,
-  ProcessOutputType,
   ProcessOutput,
+  ProcessOutputType,
   RuntimeError,
   RuntimeErrorWrap
 }
@@ -11,9 +11,17 @@ import com.olegych.scastie.api.{
 import sbt._
 import Keys._
 
+import sbt.internal.LogManager
 import play.api.libs.json.Json
+import org.apache.logging.log4j.core
+import org.apache.logging.log4j.core.appender.AbstractAppender
+import org.apache.logging.log4j.core.layout.PatternLayout
+import org.apache.logging.log4j.message.ObjectMessage
+import sbt.internal.util.{ObjectEvent, StringEvent, TraceEvent}
 
-import java.io.{PrintWriter, OutputStream, StringWriter}
+import org.apache.logging.log4j.core.appender.AbstractAppender
+
+import java.io.{PrintWriter, OutputStream}
 
 object RuntimeErrorLogger {
   private object NoOp {
@@ -44,29 +52,14 @@ object RuntimeErrorLogger {
 
   val settings: Seq[sbt.Def.Setting[_]] = Seq(
     extraLoggers := {
-      val clientLogger = FullLogger {
-        new Logger {
-          def log(level: Level.Value, message: => String): Unit = ()
-
-          def success(message: => String): Unit = () // << this is never called
-
-          def trace(t: => Throwable): Unit = {
-
-            // Nonzero exit code: 1
-            val sbtTrap =
-              t.isInstanceOf[RuntimeException] &&
-                t.getMessage == "Nonzero exit code: 1" &&
-                !t.getStackTrace.exists(
-                  e => e.getClassName == "sbt.Run" && e.getMethodName == "invokeMain"
-                )
-
-            if (!sbtTrap) {
-              val error = RuntimeErrorWrap(RuntimeError.fromThrowable(t))
-              println(Json.stringify(Json.toJson(error)))
-            }
-          }
-        }
+      val clientLogger = new AbstractAppender(
+        "FakeAppender",
+        null,
+        PatternLayout.createDefaultLayout()
+      ) {
+        override def append(event: core.LogEvent): Unit = {}
       }
+      clientLogger.start()
       // val currentFunction = extraLoggers.value
       (key: ScopedKey[_]) =>
         Seq(clientLogger)

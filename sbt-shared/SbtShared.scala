@@ -1,3 +1,4 @@
+import scala.sys.process.Process
 import sbt._
 import Keys._
 
@@ -29,11 +30,11 @@ object SbtShared {
   val latestDotty = "0.7.0-RC1"
 
   // sbt-ensime 1.12.14 creates .ensime with 2.0.0-M4 server jar
-  val latestSbtEnsime = "1.12.14"
-  val latestEnsime = "2.0.0-M4"
-  val latestCoursier = "1.0.0-RC14"
+  val latestSbtEnsime = "2.6.1"
+  val latestEnsime = "2.0.1"
+  val latestCoursier = "1.0.3"
 
-  val sbtVersion = "0.13.16"
+  val sbtVersion = "1.1.6"
 
   val runtimeProjectName = "runtime-scala"
 
@@ -48,8 +49,8 @@ object SbtShared {
       val indexState =
         if (gitIsDirty()) "-dirty"
         else ""
-
-      Process("git rev-parse --verify HEAD").lines.mkString("") + indexState
+      Process("git rev-parse --verify HEAD").lineStream
+        .mkString("") + indexState
     } else "CI"
   }
 
