@@ -278,7 +278,6 @@ lazy val server = project
       "org.json4s" %% "json4s-native" % "3.5.2",
       "ch.megard" %% "akka-http-cors" % "0.2.1",
       "com.softwaremill.akka-http-session" %% "core" % "0.4.0",
-      "de.heikoseeberger" %% "akka-sse" % "3.0.0",
       akkaHttp,
       akka("remote"),
       akka("slf4j"),
