@@ -101,7 +101,7 @@ lazy val loggingAndTest =
   Seq(
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.1.7",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",
       "com.getsentry.raven" % "raven-logback" % "8.0.3"
     )
   ) ++ testSettings
@@ -234,7 +234,7 @@ lazy val sbtRunner = project
       akka("remote"),
       akka("slf4j"),
       akkaHttp,
-      "com.geirsson" %% "scalafmt-core" % "1.3.0"
+      "com.geirsson" %% "scalafmt-core" % "1.5.1"
     ),
     imageNames in docker := Seq(
       ImageName(
@@ -276,8 +276,8 @@ lazy val server = project
     javaOptions in reStart += "-Xmx512m",
     libraryDependencies ++= Seq(
       "org.json4s" %% "json4s-native" % "3.5.2",
-      "ch.megard" %% "akka-http-cors" % "0.2.1",
-      "com.softwaremill.akka-http-session" %% "core" % "0.4.0",
+      "ch.megard" %% "akka-http-cors" % "0.3.0",
+      "com.softwaremill.akka-http-session" %% "core" % "0.5.5",
       akkaHttp,
       akka("remote"),
       akka("slf4j"),
@@ -371,7 +371,7 @@ lazy val instrumentation = project
   .settings(loggingAndTest)
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "scalameta" % "1.7.0",
+      "org.scalameta" %% "scalameta" % "1.8.0",
       "com.googlecode.java-diff-utils" % "diffutils" % "1.3.0" % Test
     )
   )
